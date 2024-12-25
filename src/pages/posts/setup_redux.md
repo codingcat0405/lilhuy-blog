@@ -29,7 +29,7 @@ tags: [ "react", "redux" ]
 
 # Redux and core concepts
 
-![redux.gif](/public/blogs-images/redux.gif)
+![redux.gif](/blogs-images/redux.gif)
 
 The core components of Redux are:
 
@@ -196,7 +196,7 @@ return (
 export default App;
 ```
 - If you follow to this step you can type yarn dev in your terminal for the result:
-![result](/public/blogs-images/redux-result.png)
+![result](/blogs-images/redux-result.png)
 - For other slice you want to add to your redux state just repeat these steps below. That’s it!! Quite neet, right? If you want the code i leave the github repo here. Leave it a star if you like this blog <3. https://github.com/lilhuy0405/react-redux-template
 
 # Conclusion
