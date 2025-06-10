@@ -6,7 +6,7 @@ description: 'To turn a server into a Router'
 author: 'codingcat'
 excerpt: Install pfense to a VM in Promox VE so you can turn this promox server to a router
 image:
-  src:
+  src: /blogs-images/pfsense4.png
   alt:
 tags: ['devops', 'pfsense', 'promox']
 ---
