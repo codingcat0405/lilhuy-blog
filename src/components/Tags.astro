@@ -7,11 +7,13 @@ interface Props {
 }
 
 const { tags, withHref } = Astro.props;
+// Ensure tags is always an array, even if undefined or null
+const safeTags = tags || [];
 ---
 
 <div class="flex flex-wrap">
 	{
-		tags.map((tag: string) => {
+		safeTags.map((tag: string) => {
 			const element = <Tag tag={tag} withHref={withHref} />;
 			return withHref ? <a href={`/tags/${tag}`}>{element}</a> : element;
 		})

@@ -10,7 +10,12 @@ const { description } = AppConfig;
 
 const allPosts = await Astro.glob('../posts/*.md');
 
-const allTags = allPosts.map((post) => post.frontmatter.tags).flat();
+// Filter posts that have tags and flatten the tags array
+const allTags = allPosts
+	.filter((post) => post.frontmatter.tags && Array.isArray(post.frontmatter.tags))
+	.map((post) => post.frontmatter.tags)
+	.flat();
+
 const uniqueTags: Set<string> = new Set(allTags);
 let tagMap: Record<string, number> = {};
 

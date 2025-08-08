@@ -9,15 +9,25 @@ import { MarkdownInstance } from 'astro/dist/@types/astro';
 export async function getStaticPaths(): Promise<any> {
 	const allPosts = await Astro.glob('../posts/*.md');
 
+	// Filter posts that have tags and flatten the tags array
 	const allTags: Set<string> = new Set(
-		allPosts.map((post: MarkdownInstance<Record<string, any>>) => post.frontmatter.tags).flat()
+		allPosts
+			.filter(
+				(post: MarkdownInstance<Record<string, any>>) =>
+					post.frontmatter.tags && Array.isArray(post.frontmatter.tags)
+			)
+			.map((post: MarkdownInstance<Record<string, any>>) => post.frontmatter.tags)
+			.flat()
 	);
 
 	return [...allTags].map((tag) => ({
 		params: { tag: tag },
 		props: {
-			posts: allPosts.filter((post: MarkdownInstance<Record<string, any>>) =>
-				post.frontmatter.tags.includes(tag)
+			posts: allPosts.filter(
+				(post: MarkdownInstance<Record<string, any>>) =>
+					post.frontmatter.tags &&
+					Array.isArray(post.frontmatter.tags) &&
+					post.frontmatter.tags.includes(tag)
 			)
 		}
 	}));
@@ -44,7 +54,12 @@ const { posts } = Astro.props;
 	<Section>
 		{
 			posts
-				.filter((post: any) => post.frontmatter.tags?.includes(tag))
+				.filter(
+					(post: any) =>
+						post.frontmatter.tags &&
+						Array.isArray(post.frontmatter.tags) &&
+						post.frontmatter.tags.includes(tag)
+				)
 				.map((post: any) => (
 					<div class="mb-4 basis-1 last:mb-0">
 						<Card post={post} />
