@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: '[DevOps Series] Part 1: Some concepts and terminologies'
-pubDate: 2025-08-08
+pubDate: 2025-08-12
 description: 'Just an overview of some concepts and terminologies in DevOps that I think you should know'
 author: 'codingcat'
 excerpt: Just an overview of some concepts and terminologies in DevOps that I think you should know
