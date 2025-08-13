@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: '[DevOps Series] Part 4: K8s in a nutshell'
-pubDate: 2025-08-15
+pubDate: 2025-08-07
 description: 'K8s in a nutshell'
 author: 'codingcat'
 excerpt: K8s in a nutshell

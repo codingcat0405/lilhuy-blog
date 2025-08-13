@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: '[DevOps Series] Part 3: Docker and the world of containerization'
-pubDate: 2025-08-14
+pubDate: 2025-08-07
 description: 'Docker and the world of containerization'
 author: 'codingcat'
 excerpt: Docker and the world of containerization
