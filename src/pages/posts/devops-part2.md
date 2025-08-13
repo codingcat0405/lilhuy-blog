@@ -13,7 +13,7 @@ tags: ['devops', 'devops-series']
 
 # 📚 Series Table of Contents
 
-1. 📖 [Chapter 0: Introduction and Stories](./devops-part0)
+1. 📖 [Chapter 0: Introduction and Stories](/posts/devops-part0)
 2. 📚 [Chapter 1: Some concepts and terminologies](./devops-part1)
 3. 🚀 [Chapter 2: A noob guy deploys his web app](./devops-part2) (You are here) 🎯
 4. 🐳 [Chapter 3: Docker and the world of containerization](./devops-part3) 📦
