@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: '[DevOps Series] Part 4: K8s in a nutshell'
-pubDate: 2025-08-07
+pubDate: 2025-10-24
 description: 'K8s in a nutshell'
 author: 'codingcat'
 excerpt: K8s in a nutshell
@@ -32,7 +32,7 @@ tags: ['devops', 'devops-series']
 
 ---
 
-Welcome to the world of Kubernetes! If Docker is like learning to drive a car, then Kubernetes is like learning to manage a fleet of cars. In this chapter, we'll explore K8s basics by building on your Docker knowledge.
+Whether you're a DevOps engineer or not, you've probably heard about Kubernetes or K8s. In this blog, we'll learn what it is and how it works. This is just a brief overview - in the next chapter, we'll dive deeper into K8s.
 
 ## From Docker to Kubernetes
 
@@ -58,34 +58,11 @@ But in production, you need:
 **Kubernetes to the Rescue:**
 K8s is like having a smart manager for your container fleet. It handles all the complex orchestration so you can focus on your applications.
 
-## Why We Need Kubernetes
-
 Think of it this way:
 
 - **Docker** = Single container management
 - **Docker Compose** = Multi-container on one machine
 - **Kubernetes** = Multi-container across multiple machines with intelligence
-
-## K8s Core Concepts (Overview)
-
-### 🏗️ Cluster Architecture
-
-- **Node**: A worker machine (physical or virtual)
-- **Cluster**: A set of nodes running containerized applications
-- **Pod**: The smallest deployable unit (usually 1 container, but can have multiple)
-- **Deployment**: Manages pod replicas and updates
-- **Service**: Stable network endpoint for pods
-- **Secret**: Secure way to store sensitive data
-
-### 📦 Key Resources
-
-- **Pod**: One or more containers sharing resources
-- **Service**: Network access to pods
-- **Deployment**: Manages pod replicas and rolling updates
-- **ConfigMap**: Configuration data
-- **Secret**: Sensitive data (passwords, keys)
-
-### K8s vs Docker
 
 | Docker | Kubernetes |
 |--------|------------|
@@ -95,81 +72,82 @@ Think of it this way:
 | Basic networking | Advanced networking |
 | Simple scaling | Intelligent scaling |
 
+**Note:** Actually, Docker has Docker Swarm to manage multiple containers across multiple machines. But it's not as powerful as K8s, so very few people use it.
+
+## K8s Core Concepts (Overview)
+
+- First, why do we call it 'K8s' for short? Here's why: `Kubernetes = K + ubernete + s`. The word 'ubernete' has 8 letters => K8s :)))
+- K8s is a project from Google, but now it's under the Cloud Native Computing Foundation (CNCF).
+- K8s looks very complex with many new concepts, but don't worry - at the end of the day, you just work with lots and lots of YAML files.
+
+![YAML meme](/devops-series/7.png)
+
+### 🏗️ Cluster Architecture
+
+- **Pod**: In the Docker world, the smallest unit is a container. In the K8s world, the smallest unit is a Pod. A Pod is a unit that runs your containers (usually 1 pod = 1 container, but can have multiple containers inside a pod).
+- **Node**: A machine (physical or virtual) that has K8s installed and runs your containers. It can be a worker node or a master node.
+- **Cluster**: Group all your nodes together and you have a K8s cluster. A cluster can have one master node and multiple worker nodes, or multiple master nodes. For small clusters (e.g., 2 or 3 nodes), you can set all of them as master nodes.
+- **Deployment**: Manages pod replicas and updates
+- **Service**: Stable network endpoint for pods
+- **Secret**: Secure way to store sensitive data
+
+### 📦 Control the cluster
+
+- Each node in the cluster will have many services installed based on its role (master node or worker node). They can communicate with each other via the API server.
+- The master node of a K8s cluster runs services to control all nodes in the cluster (deploy deployments, scale deployments, etc.) and an API server that you can call to control the cluster.
+- Most of the time, you just work with the master node and API server via a command-line tool called `kubectl`. (Behind the scenes, this tool calls the K8s cluster API server)
+
 ## Install MicroK8s
 
-MicroK8s is the simplest way to get Kubernetes running locally. It's perfect for learning and development.
+The best way to learn K8s is to try installing it on your local machine. MicroK8s is the simplest way to get Kubernetes running locally. It's perfect for learning and development.
 
 ```bash
 # Install MicroK8s
 sudo snap install microk8s --classic
-
-# Add your user to the microk8s group
-sudo usermod -a -G microk8s $USER
-newgrp microk8s
-
-# Check status
-microk8s status
-
-# Enable essential addons
-microk8s enable dns dashboard storage
-
-# Get kubectl alias
-echo "alias kubectl='microk8s kubectl'" >> ~/.bashrc
-source ~/.bashrc
 ```
+
+At this point, your machine is now a K8s cluster with 1 master node. Note that MicroK8s installs its own kubectl as `microk8s kubectl`. In the real world, you need to install kubectl on your machine and configure it to control your MicroK8s cluster (and other clusters you have too - e.g., I'm managing about 10 clusters).
 
 ## Your First K8s Deployment (Commands)
 
 Let's deploy a simple nginx app using kubectl commands:
 
 ```bash
+# Get nodes in the cluster
+sudo microk8s kubectl get nodes
+
 # Create a deployment
-kubectl create deployment nginx-app --image=nginx:alpine
+sudo microk8s kubectl create deployment nginx-app --image=nginx:alpine
 
 # Scale the deployment
-kubectl scale deployment nginx-app --replicas=3
+sudo microk8s kubectl scale deployment nginx-app --replicas=3
 
 # Expose the deployment
-kubectl expose deployment nginx-app --port=80 --type=LoadBalancer
+sudo microk8s kubectl expose deployment nginx-app --port=80 --type=LoadBalancer
 
 # Check what we created
-kubectl get pods
-kubectl get services
-kubectl get deployments
+sudo microk8s kubectl get pods
+sudo microk8s kubectl get services
+sudo microk8s kubectl get deployments
 
 # Get detailed info
-kubectl describe pod <pod-name>
-kubectl describe service nginx-app
+sudo microk8s kubectl describe pod <pod-name>
+sudo microk8s kubectl describe service nginx-app
 
 # View logs
-kubectl logs <pod-name>
-kubectl logs -f <pod-name>  # Follow logs
+sudo microk8s kubectl logs <pod-name>
+sudo microk8s kubectl logs -f <pod-name>  # Follow logs
 
 # Execute commands in pod
-kubectl exec -it <pod-name> -- /bin/sh
+sudo microk8s kubectl exec -it <pod-name> -- /bin/sh
 ```
 
-## Inspect Your Deployment
-
-```bash
-# List all resources
-kubectl get all
-
-# Get pod details
-kubectl get pods -o wide
-
-# Describe a specific pod
-kubectl describe pod <pod-name>
-
-# Check pod logs
-kubectl logs <pod-name>
-
-# Check service endpoints
-kubectl get endpoints
-
-# View events
-kubectl get events
-```
+- **Explanations:**
+  - You can use any image you want (or the image you built and pushed to Docker Hub in chapter 3). At this point, you cannot access the nginx app from your browser because the service is not exposed to the internet. We'll talk more about this in the next chapter.
+  - **Deployment** is a resource that manages pods. It ensures that pods are running and healthy.
+  - **Service** is a resource that exposes pods to the outside world. We'll talk more about this in the next chapter.
+  - **pod-name** is the name of the pod you created. You can get it by running `sudo microk8s kubectl get pods`.
+  - There's another important resource called **namespace**. It's a way to group resources together. You can create a namespace by running `sudo microk8s kubectl create namespace <namespace-name>` and add `--namespace <namespace-name>` to any kubectl command to tell kubectl to operate on that namespace. If you don't specify the namespace, kubectl will operate on the default namespace (as shown in the code example).
 
 ## K8s Features in Action
 
@@ -177,34 +155,40 @@ kubectl get events
 
 ```bash
 # Update the image
-kubectl set image deployment nginx-app nginx=nginx:latest
+sudo microk8s kubectl set image deployment nginx-app nginx=nginx:latest
 
 # Check rollout status
-kubectl rollout status deployment nginx-app
+sudo microk8s kubectl rollout status deployment nginx-app
 
 # Rollback if needed
-kubectl rollout undo deployment nginx-app
+sudo microk8s kubectl rollout undo deployment nginx-app
 
 # Check rollout history
-kubectl rollout history deployment nginx-app
+sudo microk8s kubectl rollout history deployment nginx-app
 ```
+
+- **Rolling update** is a great feature of K8s. It allows you to update the image of a deployment without downtime.
+- Rolling updates always keep the old pods running until the new pods are ready.
 
 ### Scaling
 
 ```bash
 # Scale up
-kubectl scale deployment nginx-app --replicas=5
+sudo microk8s kubectl scale deployment nginx-app --replicas=5  # Scale to 5 pods
 
 # Scale down
-kubectl scale deployment nginx-app --replicas=2
+sudo microk8s kubectl scale deployment nginx-app --replicas=2
 
 # Auto-scaling (if metrics-server is enabled)
-kubectl autoscale deployment nginx-app --min=2 --max=10 --cpu-percent=50
+sudo microk8s kubectl autoscale deployment nginx-app --min=2 --max=10 --cpu-percent=50
 ```
+
+- This is what Docker finds hard to do. In K8s, when you want to scale an app (e.g., when your backend has a lot of requests), you can just scale the deployment and K8s will take care of the rest. When your app doesn't need to handle so many requests, you can scale down the deployment to save resources.
+- These tasks are handled by the **ReplicaSet** resource. It ensures that the number of pods is always the same as the number of replicas.
 
 ## Deploy with YAML Files
 
-Now let's create the same deployment using YAML files:
+- Like Docker Compose, K8s also uses YAML files to deploy resources (saving you from typing a lot of commands).
 
 ```yaml
 # nginx-deployment.yaml
@@ -250,70 +234,56 @@ spec:
   type: LoadBalancer
 ```
 
+- Look at the YAML file - you can see I define a deployment that runs 3 pods of the nginx image and a service that exposes the deployment to the outside world. (Again, you don't need to know which service is which - we'll cover it in detail in the next blog)
 Deploy with YAML:
 
 ```bash
 # Apply the configuration
-kubectl apply -f nginx-deployment.yaml
+sudo microk8s kubectl apply -f nginx-deployment.yaml
 
 # Check status
-kubectl get pods
-kubectl get services
+sudo microk8s kubectl get pods
+sudo microk8s kubectl get services
 
 # Update the deployment
-kubectl apply -f nginx-deployment.yaml
+sudo microk8s kubectl apply -f nginx-deployment.yaml
 
 # Delete resources
-kubectl delete -f nginx-deployment.yaml
-```
-
-## Working with Secrets
-
-```bash
-# Create a secret
-kubectl create secret generic my-secret --from-literal=username=admin --from-literal=password=secret123
-
-# List secrets
-kubectl get secrets
-
-# Describe secret
-kubectl describe secret my-secret
-
-# Use secret in deployment
-kubectl create deployment app-with-secret --image=nginx:alpine
-kubectl set env deployment app-with-secret --from=secret/my-secret
+sudo microk8s kubectl delete -f nginx-deployment.yaml
 ```
 
 ## Essential kubectl Commands
 
+Some kubectl commands you should know:
+
 ```bash
 # Cluster info
-kubectl cluster-info
-kubectl get nodes
+sudo microk8s kubectl cluster-info
+sudo microk8s kubectl get nodes
 
 # Pods
-kubectl get pods
-kubectl get pods -o wide
-kubectl describe pod <pod-name>
-kubectl logs <pod-name>
+sudo microk8s kubectl get pods
+sudo microk8s kubectl get pods -o wide
+sudo microk8s kubectl describe pod <pod-name>
+sudo microk8s kubectl logs <pod-name>
 
 # Deployments
-kubectl get deployments
-kubectl describe deployment <deployment-name>
-kubectl rollout status deployment <deployment-name>
+sudo microk8s kubectl get deployments
+sudo microk8s kubectl describe deployment <deployment-name>
+sudo microk8s kubectl rollout status deployment <deployment-name>
 
 # Services
-kubectl get services
-kubectl describe service <service-name>
+sudo microk8s kubectl get services
+sudo microk8s kubectl describe service <service-name>
 
 # Namespaces
-kubectl get namespaces
-kubectl create namespace my-namespace
+sudo microk8s kubectl get namespaces
+sudo microk8s kubectl create namespace my-namespace
 
 # Delete resources
-kubectl delete pod <pod-name>
-kubectl delete deployment <deployment-name>
-kubectl delete service <service-name>
+sudo microk8s kubectl delete pod <pod-name>
+sudo microk8s kubectl delete deployment <deployment-name>
+sudo microk8s kubectl delete service <service-name>
 ```
 
 ## What's Next?
@@ -321,10 +291,8 @@ kubectl delete service <service-name>
 This is just the beginning! In the next chapter, we'll dive deeper into:
 
 - Advanced K8s concepts
-- Networking and storage
-- Security and RBAC
-- Monitoring and logging
-- Production best practices
+- K8s networking
+- Expose HTTP via Ingress
 
 ## Quick Summary
 
@@ -337,11 +305,10 @@ This is just the beginning! In the next chapter, we'll dive deeper into:
 - Pod inspection and management
 - Rolling updates and scaling
 - YAML file deployments
-- Working with secrets
 
 ## Conclusion
 
-Kubernetes might seem complex at first, but it's just a container orchestrator that makes your life easier. Start with the basics, practice locally with MicroK8s, and gradually explore advanced features. The best way to learn K8s is by doing - deploy applications, break things, and fix them!
+Kubernetes might seem complex at first, but it's just a container orchestrator that makes your life easier. Start with the basics, practice locally with MicroK8s, and gradually explore advanced features. The best way to learn K8s is by doing - deploy applications, break things, and fix them! Don't know how to fix? Don't forget these days you have AI assistants to help you.
 
 ---
 
